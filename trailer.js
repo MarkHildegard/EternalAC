@@ -1,4 +1,4 @@
-// Szene Setup
+// Szene und Kamera Setup
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer();
@@ -6,88 +6,79 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // Lichtquellen
-const light = new THREE.AmbientLight(0x404040, 1);
-scene.add(light);
-
+const ambientLight = new THREE.AmbientLight(0x404040, 1);
+scene.add(ambientLight);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(1, 1, 1).normalize();
 scene.add(directionalLight);
 
-// 3D-Objekte - Beispiel "Minecraft-Block"
+// Minecraft-Block als Beispiel
 const geometry = new THREE.BoxGeometry();
 const material = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+const block = new THREE.Mesh(geometry, material);
+block.position.set(0, 0, 0);
+scene.add(block);
 
-// Kamera Position
-camera.position.z = 5;
+// Lade Minecraft-Spieler-Modelle (Vorab vorbereitete Modelle als Beispiel)
+const loader = new THREE.GLTFLoader();
+let playerModel;
+loader.load('player_model.glb', function (gltf) {
+    playerModel = gltf.scene;
+    playerModel.scale.set(0.5, 0.5, 0.5);
+    playerModel.position.set(-3, 0, 0);
+    scene.add(playerModel);
+}, undefined, function (error) {
+    console.error(error);
+});
 
-// Animationen (Text & Bewegungen)
+// Kamera Setup
+camera.position.z = 10;
+
+// Kampfanimationen
+function animateFight() {
+    if (playerModel) {
+        gsap.to(playerModel.rotation, { y: Math.PI * 2, duration: 2, repeat: -1, ease: "none" }); // Spieler dreht sich
+    }
+    gsap.to(block.position, { x: 2, duration: 1, yoyo: true, repeat: -1 }); // Block bewegt sich hin und her
+}
+
+// Kampftext anzeigen
+function displayFightText() {
+    const div = document.createElement('div');
+    div.style.position = 'absolute';
+    div.style.color = 'white';
+    div.style.fontSize = '50px';
+    div.style.fontFamily = 'Arial';
+    div.style.top = '50%';
+    div.style.left = '50%';
+    div.style.transform = 'translate(-50%, -50%)';
+    div.innerHTML = "Epic Battle!";
+    document.body.appendChild(div);
+
+    // Textanimation mit GSAP
+    gsap.fromTo(div, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 1.5, ease: "back.out(1.7)" });
+    gsap.to(div, { opacity: 0, duration: 1, delay: 3 });
+}
+
+// Animation der gesamten Szene
 function animate() {
     requestAnimationFrame(animate);
-    
-    // Cube Rotation für die Animation
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
+
+    if (playerModel) {
+        playerModel.rotation.y += 0.01;
+    }
 
     renderer.render(scene, camera);
 }
 animate();
 
-// GSAP Animationen für Text
-function createText(text, position) {
-    const div = document.createElement('div');
-    div.style.position = 'absolute';
-    div.style.color = 'white';
-    div.style.fontSize = '36px';
-    div.style.fontFamily = 'Arial';
-    div.style.top = position.y + 'px';
-    div.style.left = position.x + 'px';
-    div.innerHTML = text;
-    document.body.appendChild(div);
-
-    // Effekt mit GSAP
-    gsap.fromTo(div, {
-        opacity: 0,
-        scale: 0,
-    }, {
-        opacity: 1,
-        scale: 1,
-        duration: 1.5,
-        delay: 0.5,
-        ease: "back.out(1.7)"
-    });
-
-    return div;
-}
-
-// Text für den Trailer
-const welcomeText = createText("Welcome to Eternal Survival", {x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 50});
-gsap.to(welcomeText, {opacity: 0, duration: 1, delay: 3, ease: "power1.out"});
-
-// Kamerafahrten und Effekt
-gsap.to(camera.position, {
-    z: 15,
-    duration: 5,
-    delay: 2,
-    ease: "power2.inOut"
-});
-
-// Beispiel für weitere Kamerabewegungen oder Übergänge (p. Beispiel für "Mining"-Szene)
+// Kampf starten
 setTimeout(() => {
-    const mineText = createText("Mining in Progress...", {x: window.innerWidth / 2 - 180, y: window.innerHeight / 2 - 100});
-    gsap.to(mineText, {opacity: 0, duration: 1, delay: 4, ease: "power1.out"});
+    animateFight();
+    displayFightText();
+}, 2000);
 
-    // Wechselt die Kamera auf eine andere Position nach "Mining"
-    gsap.to(camera.position, {
-        z: 25,
-        duration: 5,
-        delay: 5,
-        ease: "power2.inOut"
-    });
-}, 4000);
-
-// Fenstergröße anpassen
+// Resize-Handling für Responsivität
 window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;
