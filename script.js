@@ -1,27 +1,41 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const followers = document.getElementById("followers");
-    const likes = document.getElementById("likes");
-    const views = document.getElementById("views");
-    const refreshBtn = document.getElementById("refresh-btn");
+    const logContainer = document.getElementById("log");
+    const startBtn = document.getElementById("start-mining");
+    const stopBtn = document.getElementById("stop-mining");
 
-    function updateStats() {
-        // Fake-Stats für Test (ersetzen mit echter API)
-        const fakeStats = {
-            followers: Math.floor(Math.random() * 1000000),
-            likes: Math.floor(Math.random() * 5000000),
-            views: Math.floor(Math.random() * 10000000)
-        };
+    let mining = false;
+    let miningInterval;
 
-        gsap.to(followers, { duration: 0.5, textContent: fakeStats.followers, ease: "power2.out" });
-        gsap.to(likes, { duration: 0.5, textContent: fakeStats.likes, ease: "power2.out" });
-        gsap.to(views, { duration: 0.5, textContent: fakeStats.views, ease: "power2.out" });
+    function logMessage(message, type = "success") {
+        const msg = document.createElement("div");
+        msg.textContent = message;
+        msg.style.color = type === "success" ? "#00ff00" : "#ff0000";
+        logContainer.appendChild(msg);
+        logContainer.scrollTop = logContainer.scrollHeight;
     }
 
-    refreshBtn.addEventListener("click", updateStats);
+    function startMining() {
+        if (mining) return;
+        mining = true;
+        logMessage("🚀 Starting Crypto Mining...", "success");
 
-    // Animationen beim Start
-    gsap.from(".glitch", { opacity: 0, y: -50, duration: 1.2, ease: "bounce.out" });
-    gsap.from(".stat-box", { opacity: 0, scale: 0.8, duration: 1, delay: 0.5, stagger: 0.3 });
+        miningInterval = setInterval(() => {
+            let foundBlock = Math.random() > 0.6; // 40% Chance auf "Fehlgeschlagen"
+            if (foundBlock) {
+                logMessage(`✅ Block #${Math.floor(Math.random() * 1000000)} mined successfully!`, "success");
+            } else {
+                logMessage(`❌ Block verification failed. Retrying...`, "error");
+            }
+        }, 1000);
+    }
 
-    updateStats();
+    function stopMining() {
+        if (!mining) return;
+        mining = false;
+        clearInterval(miningInterval);
+        logMessage("🛑 Mining stopped.", "error");
+    }
+
+    startBtn.addEventListener("click", startMining);
+    stopBtn.addEventListener("click", stopMining);
 });
