@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const msg = document.createElement("div");
         msg.textContent = message;
         msg.style.color = type === "success" ? "#00ff00" : "#ff0000";
+        msg.style.animation = "logAppear 0.5s forwards";
         logContainer.appendChild(msg);
         logContainer.scrollTop = logContainer.scrollHeight;
     }
@@ -20,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
         logMessage("🚀 Starting Crypto Mining...", "success");
 
         miningInterval = setInterval(() => {
-            let foundBlock = Math.random() > 0.6; // 40% Chance auf "Fehlgeschlagen"
+            let foundBlock = Math.random() > 0.5; // 50% Chance auf Fehler
             if (foundBlock) {
                 logMessage(`✅ Block #${Math.floor(Math.random() * 1000000)} mined successfully!`, "success");
             } else {
