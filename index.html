@@ -3,22 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eternal Survival Trailer</title>
+    <title>Eternal DDoS Simulation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        body, html {
-            margin: 0;
-            height: 100%;
-            background-color: #000;
-            overflow: hidden;
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 20px;
         }
-        canvas {
-            display: block;
+
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #FF0000;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #FF4444;
+        }
+
+        #console-log {
+            background-color: #000;
+            color: #00FF00;
+            padding: 20px;
+            margin-top: 20px;
+            height: 200px;
+            overflow-y: scroll;
+            border-radius: 5px;
+            text-align: left;
+        }
+
+        .attack {
+            font-size: 30px;
+            color: red;
+            animation: attackAnimation 3s infinite;
+        }
+
+        @keyframes attackAnimation {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
-    <script src="trailer.js"></script>
+    <h1>Eternal DDoS Simulation</h1>
+    <p>Enter a server IP and port to simulate a DDoS attack!</p>
+    
+    <input type="text" id="server-ip" placeholder="Enter IP (e.g., 192.168.1.1)">
+    <input type="text" id="server-port" placeholder="Enter Port (e.g., 8080)">
+    
+    <br>
+    <button id="start-btn">Start Mining Simulation</button>
+    <button id="stop-btn" style="display: none;">Stop Mining Simulation</button>
+
+    <div id="console-log"></div>
+
+    <div id="attack-animation" style="display:none;">
+        <div class="attack">ATTACK IN PROGRESS...</div>
+    </div>
+
+    <script>
+        let isSimulating = false;
+        const startButton = document.getElementById('start-btn');
+        const stopButton = document.getElementById('stop-btn');
+        const consoleLog = document.getElementById('console-log');
+        const attackAnimation = document.getElementById('attack-animation');
+        
+        startButton.addEventListener('click', () => {
+            const ip = document.getElementById('server-ip').value;
+            const port = document.getElementById('server-port').value;
+            
+            if (ip && port) {
+                isSimulating = true;
+                startButton.style.display = 'none';
+                stopButton.style.display = 'inline-block';
+                attackAnimation.style.display = 'block';
+                logMessage(`Initiating DDoS simulation on ${ip}:${port}...`);
+                simulateAttack();
+            } else {
+                alert('Please enter both IP and Port!');
+            }
+        });
+        
+        stopButton.addEventListener('click', () => {
+            isSimulating = false;
+            startButton.style.display = 'inline-block';
+            stopButton.style.display = 'none';
+            attackAnimation.style.display = 'none';
+            logMessage('Simulation stopped.');
+        });
+
+        function logMessage(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            consoleLog.innerHTML += `[${timestamp}] ${message}<br>`;
+            consoleLog.scrollTop = consoleLog.scrollHeight;
+        }
+
+        function simulateAttack() {
+            if (isSimulating) {
+                logMessage('ATTACK: Heavy packet flood detected...');
+                setTimeout(simulateAttack, 2000);
+            }
+        }
+    </script>
 </body>
 </html>
