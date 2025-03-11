@@ -3,26 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Miner</title>
-    <link rel="stylesheet" href="style.css">
-    <script defer src="script.js"></script>
+    <title>Eternal Survival Trailer</title>
+    <style>
+        body, html {
+            margin: 0;
+            overflow: hidden;
+            height: 100%;
+            background-color: #0a0a0a;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <div class="loading-screen">
-        <h1>Loading...</h1>
-    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
 
-    <div class="container">
-        <h1 class="glitch">Crypto Miner</h1>
-
-        <div class="buttons">
-            <button id="start-mining">⚡ Start Mining</button>
-            <button id="stop-mining">🛑 Stop Mining</button>
-        </div>
-
-        <div class="console">
-            <div id="log"></div>
-        </div>
-    </div>
+    <script src="trailer.js"></script>
 </body>
 </html>
