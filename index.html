@@ -3,119 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eternal DDoS Simulation</title>
+    <title>Server Fight Simulation</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Press Start 2P', cursive;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
             background: #111;
             color: white;
-            text-align: center;
-            padding: 20px;
+            font-family: 'Press Start 2P', cursive;
         }
 
-        input, button {
-            padding: 10px;
-            margin: 10px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
         }
 
-        button {
-            background-color: #FF0000;
-            color: white;
-            cursor: pointer;
+        #server {
+            position: absolute;
+            bottom: 50px;
+            left: 50vw;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+            background-color: #ff0000;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+            opacity: 0;
+            animation: slideIn 1s forwards;
         }
 
-        button:hover {
-            background-color: #FF4444;
+        @keyframes slideIn {
+            from {
+                transform: translateX(-150%);
+            }
+            to {
+                transform: translateX(-50%);
+                opacity: 1;
+            }
+        }
+
+        .projectile {
+            position: absolute;
+            bottom: 50px;
+            left: 50vw;
+            width: 10px;
+            height: 10px;
+            background-color: #ff0000;
+            border-radius: 50%;
+            animation: shoot 1.5s linear forwards;
+        }
+
+        @keyframes shoot {
+            0% {
+                transform: translateY(0) translateX(-50%);
+            }
+            50% {
+                transform: translateY(-300px) translateX(-50%);
+            }
+            100% {
+                transform: translateY(-600px) translateX(-50%);
+            }
         }
 
         #console-log {
-            background-color: #000;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: black;
             color: #00FF00;
             padding: 20px;
-            margin-top: 20px;
+            width: 300px;
             height: 200px;
             overflow-y: scroll;
-            border-radius: 5px;
-            text-align: left;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
         }
 
-        .attack {
-            font-size: 30px;
+        .attack-message {
             color: red;
-            animation: attackAnimation 3s infinite;
+            font-size: 16px;
         }
 
-        @keyframes attackAnimation {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.5; }
-            100% { transform: scale(1); opacity: 1; }
+        .block-message {
+            color: yellow;
+            font-size: 16px;
         }
+
+        .defeated {
+            background-color: #000;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 1);
+            animation: explode 1s forwards;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
     </style>
 </head>
 <body>
-    <h1>Eternal DDoS Simulation</h1>
-    <p>Enter a server IP and port to simulate a DDoS attack!</p>
-    
-    <input type="text" id="server-ip" placeholder="Enter IP (e.g., 192.168.1.1)">
-    <input type="text" id="server-port" placeholder="Enter Port (e.g., 8080)">
-    
-    <br>
-    <button id="start-btn">Start Mining Simulation</button>
-    <button id="stop-btn" style="display: none;">Stop Mining Simulation</button>
-
-    <div id="console-log"></div>
-
-    <div id="attack-animation" style="display:none;">
-        <div class="attack">ATTACK IN PROGRESS...</div>
+    <div id="game-container">
+        <div id="server"></div>
+        <div id="console-log"></div>
     </div>
 
     <script>
-        let isSimulating = false;
-        const startButton = document.getElementById('start-btn');
-        const stopButton = document.getElementById('stop-btn');
-        const consoleLog = document.getElementById('console-log');
-        const attackAnimation = document.getElementById('attack-animation');
-        
-        startButton.addEventListener('click', () => {
-            const ip = document.getElementById('server-ip').value;
-            const port = document.getElementById('server-port').value;
-            
-            if (ip && port) {
-                isSimulating = true;
-                startButton.style.display = 'none';
-                stopButton.style.display = 'inline-block';
-                attackAnimation.style.display = 'block';
-                logMessage(`Initiating DDoS simulation on ${ip}:${port}...`);
-                simulateAttack();
-            } else {
-                alert('Please enter both IP and Port!');
-            }
-        });
-        
-        stopButton.addEventListener('click', () => {
-            isSimulating = false;
-            startButton.style.display = 'inline-block';
-            stopButton.style.display = 'none';
-            attackAnimation.style.display = 'none';
-            logMessage('Simulation stopped.');
-        });
+        const server = document.getElementById("server");
+        const consoleLog = document.getElementById("console-log");
 
-        function logMessage(message) {
-            const timestamp = new Date().toLocaleTimeString();
-            consoleLog.innerHTML += `[${timestamp}] ${message}<br>`;
+        let attackCount = 0;
+        const maxAttacks = 10;
+        let serverDefeated = false;
+
+        function logMessage(message, type) {
+            const logDiv = document.createElement('div');
+            logDiv.classList.add(type);
+            logDiv.textContent = message;
+            consoleLog.appendChild(logDiv);
             consoleLog.scrollTop = consoleLog.scrollHeight;
         }
 
-        function simulateAttack() {
-            if (isSimulating) {
-                logMessage('ATTACK: Heavy packet flood detected...');
-                setTimeout(simulateAttack, 2000);
-            }
+        function launchProjectile() {
+            if (serverDefeated) return;
+
+            const projectile = document.createElement("div");
+            projectile.classList.add("projectile");
+            document.getElementById("game-container").appendChild(projectile);
+
+            logMessage(`Attacking Server...`, 'attack-message');
+
+            setTimeout(() => {
+                if (Math.random() < 0.5) {
+                    logMessage(`Server blocked attack!`, 'block-message');
+                } else {
+                    attackCount++;
+                    logMessage(`Hit! Server takes damage...`, 'attack-message');
+                    if (attackCount >= maxAttacks) {
+                        server.classList.add('defeated');
+                        logMessage(`Server Defeated!`, 'attack-message');
+                        serverDefeated = true;
+                    }
+                }
+            }, 1500);
         }
+
+        // Start the simulation when the page loads
+        window.onload = () => {
+            setInterval(launchProjectile, 2000);
+        };
     </script>
 </body>
 </html>
