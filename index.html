@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eternal AntiCheat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Eternal AntiCheat</h1>
+    <p>The most advanced AntiCheat for Minecraft servers</p>
+
+    <div class="section">
+        <h2>🚀 Features</h2>
+        <ul>
+            <li>✅ Detects Fly, Speed, KillAura, NoFall & more</li>
+            <li>✅ Integrated Eternal Safety System</li>
+            <li>✅ No lag, no false bans</li>
+            <li>✅ Cool UI for admins</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>🛡️ Eternal Safety System</h2>
+        <p>The Eternal Safety System provides additional protection:</p>
+        <ul>
+            <li>🔇 <b>Mute System:</b> Admins can mute/unmute players</li>
+            <li>❄️ <b>Freeze System:</b> Cheaters can be frozen</li>
+            <li>🧹 <b>Clear Chat:</b> Instantly clears the chat</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>📥 Download</h2>
+        <p><b>Coming Soon...</b></p>
+        <button id="download-button" class="button">Download (Coming Soon)</button>
+    </div>
+
+    <div class="code-section">
+        <h2>🔧 Source Code</h2>
+        <pre><code class="language-javascript">
+        // Eternal AntiCheat Script
+        command /clearchat:
+            permission: eternal.safety.clearchat
+            trigger:
+                loop all players:
+                    loop 100 times:
+                        send " " to loop-player
+                send "&aChat cleared by %player%!" to all players
+        </code></pre>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
